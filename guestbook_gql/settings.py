@@ -28,10 +28,10 @@ GRAPHENE = {
 }
 
 GRAPHQL_JWT = {
-    'JWT_VERIFY_EXPIRATION': False,
-    'JWT_LONG_RUNNING_REFRESH_TOKEN': False,
-    'JWT_EXPIRATION_DELTA': timedelta(days=7),
-    'JWT_REFRESH_EXPIRED_HANDLER': lambda orig_iat, context: False,
+    'JWT_VERIFY_EXPIRATION': true,
+    'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
+    'JWT_EXPIRATION_DELTA': timedelta(minutes=5),
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
 }
 
 # Application definition

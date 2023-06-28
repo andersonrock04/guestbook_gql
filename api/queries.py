@@ -14,3 +14,13 @@ class Query(graphene.ObjectType):
         except Person.DoesNotExist:
             return Person.objects.none()
 
+    person_registers = graphene.List(RegisterType, identification=graphene.String(required=True))
+
+    @login_required
+    def resolve_person_registers(self, request, identification):
+        try:
+            person = Person.objects.get(identification=identification)
+            return Register.objects.filter(person=person)
+        except Person.DoesNotExist:
+            return Register.objects.none()
+

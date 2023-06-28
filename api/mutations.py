@@ -6,7 +6,7 @@ from .types import *
 from .models import *
 
 
-class PersonMutation(graphene.Mutation):
+class PersonMutation (graphene.Mutation):
     person = graphene.Field(PersonType)
 
     class Arguments:
@@ -17,11 +17,11 @@ class PersonMutation(graphene.Mutation):
 
     @classmethod
     @login_required
-    def mutate(cls, self, request, visitor_type, identification_type, identification, fullname):
+    def mutate (cls, self, request, visitor_type, identification_type, identification, fullname):
         person = Person.objects.create(visitor_type=visitor_type, identification_type=identification_type, identification=identification, fullname=fullname)
         return cls(person=person)
 
-class PersonUpdate(graphene.Mutation):
+class PersonUpdate (graphene.Mutation):
     person = graphene.Field(PersonType)
 
     class Arguments:
@@ -32,23 +32,23 @@ class PersonUpdate(graphene.Mutation):
 
     @classmethod
     @login_required
-    def mutate(cls, self, request, visitor_type, identification_type, identification, fullname):
+    def mutate (cls, self, request, **kwargs):
         try:
             person = Person.objects.get(id=id)
         except Person.DoesNotExist:
             return Person.objects.none()
-        if visitor_type:
-            person.visitor_type = visitor_type
-        if identification_type:
-            person.identification_type = identification_type
-        if identification:
-            person.identification = identification
-        if fullname:
-            person.fullname = fullname
+        if kwargs['visitor_type']:
+            person.visitor_type = kwargs['visitor_type']
+        if kwargs['identification_type']:
+            person.identification_type = kwargs['identification_type']
+        if kwargs['identification']:
+            person.identification = kwargs['identification']
+        if kwargs['fullname']:
+            person.fullname = kwargs['fullname']
         person.save()
         return cls(person=person)
 
-class PersonDelete(graphene.Mutation):
+class PersonDelete (graphene.Mutation):
     deleted = graphene.Boolean()
 
     class Arguments:
@@ -56,7 +56,7 @@ class PersonDelete(graphene.Mutation):
 
     @classmethod
     @login_required
-    def mutate(cls, self, identification):
+    def mutate (cls, self, identification):
         try:
             Person.objects.get(identification=identification).delete()
         except Person.DoesNotExist:
@@ -64,7 +64,7 @@ class PersonDelete(graphene.Mutation):
         return cls(deleted=True)
 
 
-class RegisterMutation(graphene.Mutation):
+class RegisterMutation (graphene.Mutation):
     register = graphene.Field(RegisterType)
 
     class Arguments:
@@ -74,7 +74,7 @@ class RegisterMutation(graphene.Mutation):
 
     @classmethod
     @login_required
-    def mutate(cls, self, request, identification, action, entry):
+    def mutate (cls, self, request, identification, action, entry):
         try:
             person = Person.objects.get(identification=identification)
         except Person.DoesNotExist:
@@ -82,7 +82,7 @@ class RegisterMutation(graphene.Mutation):
         register = Register.objects.create(person=person, action=action, entry=entry)
         return cls(register=register)
 
-class RegisterDelete(graphene.Mutation):
+class RegisterDelete (graphene.Mutation):
     deleted = graphene.Boolean()
 
     class Arguments:
@@ -90,7 +90,7 @@ class RegisterDelete(graphene.Mutation):
 
     @classmethod
     @login_required
-    def mutate(cls, self, request, identification):
+    def mutate (cls, self, request, identification):
         try:
             Register.objects.get(identification=identification).delete()
         except Register.DoesNotExist:
@@ -98,8 +98,10 @@ class RegisterDelete(graphene.Mutation):
         return cls(deleted=True)
 
 
-class Mutation(graphene.ObjectType):
+class Mutation (graphene.ObjectType):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
+    verify_token = graphql_jwt.Verify.Field()
+    refresh_token = graphql_jwt.Refresh.Field()
     revoke_token = graphql_jwt.Revoke.Field()
 
     create_person = PersonMutation.Field()
